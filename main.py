@@ -57,7 +57,7 @@ class MiniMap:
         self.offset_y = abs(bottom) + self.margin / 2
 
     def get_image_and_drawer(self):
-        image = Image.new("RGBA", (self.width, self.height), (0, 0, 0, 255))
+        image = Image.new("RGBA", (self.width, self.height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         return image, draw
     
