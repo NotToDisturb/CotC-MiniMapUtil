@@ -2,6 +2,7 @@ from PIL import Image, ImageDraw, ImageOps, ImageFont
 import json
 import os
 
+
 def empty_warp():
     return {
         "id": -1,
@@ -66,7 +67,7 @@ class MiniMap:
             "x": int(data["Y"]),
             "y": int(data["X"]),
             "hidden": data["HiddenPath"],
-            "connections": data["Link"],
+            "connections": [connection for connection in data["Link"] if connection != "None"],
             "warps_tp": data["FastTravel"],
             "warp_dest": data["UniqueLabel"]
         }
@@ -136,28 +137,28 @@ class MiniMap:
         self.draw_circle(effective_x, effective_y, self.path_width / 2, color=beautifier_color)
 
         self.process_warps_to(vertex, effective_x, effective_y)
+        self.process_warp_dest(vertex, effective_x, effective_y)
 
         if self.debug:
-            self.process_warp_dest(vertex, effective_x, effective_y)
             hidden_color = "red" if vertex["hidden"] else "green"
             self.draw_circle(effective_x, effective_y, self.path_width / 2, color=hidden_color)
 
     def process_warps_to(self, vertex, effective_x, effective_y):
         if vertex["warps_tp"] != "None":
             warp = self.warp_data[vertex["warps_tp"]]
-            if warp["to"] == "":
-                self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="darkgreen")
+            if warp["to"] != "":
+                self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="darkcyan")
             else:
-                self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="blue")
+                self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="darkgreen")
             self.draw_text(effective_x, effective_y, str(warp["id"]), "white")
 
-    def process_warp_dest(self, vertex, effective_x, effective_y):
+    def process_warp_dest(self, vertex, effective_x, effective_y, show_extra=False):
         if vertex["warp_dest"] != "None":
             warp = self.warp_data[vertex["warp_dest"]]
-            if len(warp["from"]) == 0:
-                self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="darkgreen")
-            else:
-                self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="blue")
+            if len(warp["from"]) != 0:
+                self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="darkcyan")
+            elif show_extra:
+                self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="darkslategray")
             self.draw_text(effective_x, effective_y, str(warp["id"]), "white")
 
     def draw_circle(self, x, y, radius, color):
@@ -194,7 +195,7 @@ class MiniMap:
 
 def export_result(result, folder, text_file):
     os.makedirs(folder, exist_ok=True)
-    result.save(folder + text_file + ".png")
+    result.save(os.path.join(folder, text_file + ".png"))
 
 
 def main():
