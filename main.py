@@ -157,9 +157,10 @@ class MiniMap:
             warp = self.warp_data[vertex["warp_dest"]]
             if len(warp["from"]) != 0:
                 self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="darkcyan")
+                self.draw_text(effective_x, effective_y, str(warp["id"]), "white")
             elif show_extra:
                 self.draw_circle(effective_x, effective_y, self.path_width * 2 / 3, color="darkslategray")
-            self.draw_text(effective_x, effective_y, str(warp["id"]), "white")
+                self.draw_text(effective_x, effective_y, str(warp["id"]), "white")
 
     def draw_circle(self, x, y, radius, color):
         coords_a = (x - radius, y - radius)
